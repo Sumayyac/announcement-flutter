@@ -43,7 +43,9 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Announcement"),
-        backgroundColor: const Color.fromARGB(255, 194, 99, 5),
+       foregroundColor: const Color.fromARGB(255, 250, 248, 248),
+        backgroundColor: const Color.fromARGB(255, 57, 57, 59),
+
         leading: IconButton(
           icon: Icon(Icons.arrow_back), // Back arrow icon
           onPressed: () {

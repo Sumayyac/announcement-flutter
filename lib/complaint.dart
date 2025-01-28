@@ -1,3 +1,5 @@
+import 'package:announcement/api/complaintapi.dart';
+import 'package:announcement/api/previouscomplaintsapi.dart';
 import 'package:flutter/material.dart';
 
 class TextInputPage extends StatefulWidget {
@@ -10,14 +12,19 @@ class _TextInputPageState extends State<TextInputPage> {
   final TextEditingController _controller = TextEditingController();
 
   // List to store all submitted complaints
-  List<String> complaints = [];
+  
+  
+  // String? get complaintText => null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Complaints Submission'),
-        backgroundColor: const Color.fromARGB(255, 234, 110, 15),
+        title: Text('Feedback'),
+        foregroundColor: const Color.fromARGB(255, 250, 248, 248),
+        backgroundColor: const Color.fromARGB(255, 57, 57, 59),
+
+        
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,7 +36,7 @@ class _TextInputPageState extends State<TextInputPage> {
               controller: _controller, // Assigning the controller to manage the input
               maxLines: 5, // Allow multiple lines
               decoration: InputDecoration(
-                labelText: 'Enter your complaint here',
+                labelText: 'Enter your Feedback here',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -37,13 +44,13 @@ class _TextInputPageState extends State<TextInputPage> {
 
             // Submit Button
             ElevatedButton(
-              onPressed: () {
+              onPressed: ()async {
+                await submitComplaint(context,_controller.text);
                 // When the submit button is clicked, store the text
+                await previouscomplaints();
                 setState(() {
-                  if (_controller.text.isNotEmpty) {
-                    complaints.add(_controller.text); // Add the complaint to the list
-                    _controller.clear(); // Clear the text field after submission
-                  }
+
+                
                 });
               },
               child: Text('Submit'),
@@ -56,24 +63,24 @@ class _TextInputPageState extends State<TextInputPage> {
 
             // Text to display if no complaints are available
             Text(
-              complaints.isEmpty ? 'No complaints submitted yet.' : 'All Complaints:',
+              feedbackss.isEmpty ? 'No feedback submitted yet.' : 'Feedbacks:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
 
             // List of all submitted complaints
             Expanded(
-              child: complaints.isEmpty
+              child: feedbackss.isEmpty
                   ? Container() // Empty container if no complaints
                   : ListView.builder(
-                      itemCount: complaints.length,
+                      itemCount: feedbackss.length,
                       itemBuilder: (context, index) {
                         return Card(
                           margin: EdgeInsets.symmetric(vertical: 4),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              complaints[index],
+                              feedbackss[index]['feedback'],
                               style: TextStyle(fontSize: 16),
                             ),
                           ),

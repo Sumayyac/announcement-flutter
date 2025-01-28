@@ -28,14 +28,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(233, 56, 3, 1),
-        title: Text('AnnouceEase'),
+        foregroundColor: const Color.fromARGB(255, 250, 248, 248),
+        backgroundColor: const Color.fromARGB(255, 57, 57, 59),
+        title:  Text('AnnounceEase'),
+        
       ),
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/images.jpg'), // Add your announcement-related background image here
-            fit: BoxFit.cover, // Ensures the image covers the whole screen
+          gradient: LinearGradient(
+            colors: [Colors.yellow.shade100, Colors.brown.shade200],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
@@ -51,20 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _usernameController, // Set the controller here
                     decoration: InputDecoration(
                       labelText: 'Username',
-                      labelStyle: TextStyle(color: Colors.white), // White label text for visibility
+                      labelStyle: TextStyle(color: const Color.fromARGB(255, 15, 14, 14)), // White label text for visibility
                       filled: true,
                       fillColor: Colors.transparent, // Make the background transparent
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 9, 9, 9)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 7, 7, 7)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.blueAccent),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 10, 10, 10)),
                       ),
                     ),
                     validator: (value) {
@@ -82,20 +85,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: TextStyle(color: Colors.white), // White label text for visibility
+                      labelStyle: TextStyle(color: const Color.fromARGB(255, 12, 12, 12)), // White label text for visibility
                       filled: true,
                       fillColor: Colors.transparent, // Make the background transparent
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 9, 9, 9)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 10, 10, 10)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(color: Colors.blueAccent),
+                        borderSide: BorderSide(color: const Color.fromARGB(255, 7, 7, 7)),
                       ),
                     ),
                     validator: (value) {
@@ -108,11 +111,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 10),
 
                   // Login Button
+                  SizedBox(height: 30,),
                   Container(
-                    width: 100,
+                   
+                    width: 100, 
                     child: ElevatedButton(
   style: ElevatedButton.styleFrom(
-    backgroundColor: const Color.fromARGB(255, 20, 185, 25),
+    backgroundColor: const Color.fromARGB(255, 3, 135, 29),
     foregroundColor: Colors.black,
   ),
   onPressed: () async {

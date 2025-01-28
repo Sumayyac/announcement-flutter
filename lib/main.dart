@@ -3,7 +3,9 @@ import 'package:announcement/complaint.dart';
 import 'package:announcement/homepage.dart';
 import 'package:announcement/loginScreen.dart';
 import 'package:announcement/previous.dart';
+import 'package:announcement/screen.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
        
       ),
-      home: LoginScreen(),
+      home:  LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
