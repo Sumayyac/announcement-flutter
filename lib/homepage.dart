@@ -14,6 +14,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        
         title: Text('Home Page'),
         foregroundColor: const Color.fromARGB(255, 250, 248, 248),
         backgroundColor: const Color.fromARGB(255, 70, 70, 70),
@@ -35,6 +36,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ],
+        
       ),
       drawer: Drawer(
         child: Container(
@@ -48,10 +50,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfilePage()),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => ProfilePage(userData)),
+                        // );
                       },
                       child: CircleAvatar(
                         radius: 30,
@@ -90,29 +92,19 @@ class HomeScreen extends StatelessWidget {
     style: TextStyle(color: Colors.black),
   ),
   onTap: () async {
-    try {
+ 
       // Ensure you declare `profiledata` properly
-      final profileData = await userprofileview(); // Corrected variable name to camelCase for consistency
-      if (profileData != null) {
-        // Navigate to ProfilePage if data is successfully fetched
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ProfilePage(profiledata: profileData),
-        //   ),
-        // );
-      } else {
-        // Handle null data case if necessary
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load profile data')),
+      Map<String, dynamic> profileData = await userprofileview(); // Corrected variable name to camelCase for consistency
+     
+       
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(userData: profileData),
+          ),
         );
-      }
-    } catch (e) {
-      // Handle exceptions from userprofileview()
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
-    }
+     
+   
   },
 ),
 
