@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
 
-  EditProfilePage({required this.userData, super.key});
+  const EditProfilePage({required this.userData, super.key});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();

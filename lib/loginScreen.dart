@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Login Button
                   SizedBox(height: 30,),
-                  Container(
+                  SizedBox(
                    
                     width: 100, 
                     child: ElevatedButton(

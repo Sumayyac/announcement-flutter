@@ -3,6 +3,8 @@ import 'package:announcement/api/previouscomplaintsapi.dart';
 import 'package:flutter/material.dart';
 
 class TextInputPage extends StatefulWidget {
+  const TextInputPage({super.key});
+
   @override
   _TextInputPageState createState() => _TextInputPageState();
 }
@@ -53,11 +55,11 @@ class _TextInputPageState extends State<TextInputPage> {
                 
                 });
               },
-              child: Text('Submit'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 textStyle: TextStyle(fontSize: 16),
               ),
+              child: Text('Submit'),
             ),
             SizedBox(height: 16), // Space between the button and the complaints list
 

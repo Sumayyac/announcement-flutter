@@ -1,4 +1,3 @@
-import 'package:announcement/api/editprofilecreen.dart';
 import 'package:announcement/api/loginapi.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +5,7 @@ class ProfilePage extends StatelessWidget {
   final Map<String, dynamic> userData;
   
 
-  ProfilePage({required this.userData,super.key});
+  const ProfilePage({required this.userData,super.key});
 
   @override
   Widget build(BuildContext context) {

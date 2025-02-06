@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Previouspage extends StatelessWidget {
+  const Previouspage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

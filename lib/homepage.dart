@@ -10,6 +10,8 @@ class HomeScreen extends StatelessWidget {
   final String name = "John Doe";
   final String department = "Software Engineering";
 
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

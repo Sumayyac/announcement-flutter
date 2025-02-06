@@ -2,14 +2,13 @@
 
 import 'package:announcement/api/loginapi.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 
 final dio = Dio();
 
 Future<Map<String,dynamic>>userprofileview() async {
   try {
-    final response = await dio.post('${baseUrl}/userprofile?lid=$lid&usertype=$usertype');
+    final response = await dio.post('$baseUrl/userprofile?lid=$lid&usertype=$usertype');
     // Print the response data
     print('Response data: ${response.data}');
     
