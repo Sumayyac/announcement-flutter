@@ -2,15 +2,16 @@
 // ignore_for_file: depend_on_referenced_packages
 
 // import 'package:bussafety/Api/profileupdateapi.dart';
+import 'package:announcement/api/loginapi.dart';
 import 'package:dio/dio.dart';
 
-final String baseUrl="http://192.168.0.118:8000";
+
 final dio = Dio();
 
-Future<void> regapi(data) async {
+Future<List<Map<String,dynamic>>>getNotificationapi() async {
   try {
 
-    Response response = await dio.post('$baseUrl/user',data: data);
+    Response response = await dio.get('$baseUrl/get_notifications',);
    
 
     // Response response = await dio.post('${apidata}/login?email=${email},password=${Password}');
@@ -19,12 +20,13 @@ Future<void> regapi(data) async {
     if (response.statusCode == 200) {
      print('success');
      
-
+return List<Map<String,dynamic>>.from(response.data);
     } else { 
-      throw Exception('failed to get');
+      return [];
+      
     }
   } catch (e) {
     print(e.toString());
-    
+     return [];
   }
 }

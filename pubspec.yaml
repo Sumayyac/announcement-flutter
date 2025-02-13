@@ -41,9 +41,11 @@ dependencies:
   permission_handler: ^11.3.1
   file_picker: ^8.1.7
   flutter_tts: ^4.2.2
-  path_provider: ^2.0.8
+  path_provider: ^2.1.5
   audioplayers: ^6.1.1
   flutter_sound: ^9.21.1
+  flutter_pdfview: ^1.4.0
+  just_audio: ^0.9.46
   # audioplayers: ^0.20.1
 
 

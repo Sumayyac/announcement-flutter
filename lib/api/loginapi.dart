@@ -6,7 +6,7 @@ final dio = Dio();
 int? lid;
 String? usertype;
 String? loginstatus;
-String baseUrl ='http://192.168.1.31:8000';
+String baseUrl ='http://192.168.1.12:8000';
 
 Future<void> loginapi(String Username, String password, BuildContext context) async {
   

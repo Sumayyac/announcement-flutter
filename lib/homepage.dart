@@ -1,5 +1,8 @@
+import 'package:announcement/addNoticeScreen.dart';
+import 'package:announcement/api/getNotification.dart';
 import 'package:announcement/api/previouscomplaintsapi.dart';
 import 'package:announcement/api/userprofileviewapi.dart';
+import 'package:announcement/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:announcement/complaint.dart';
 import 'package:announcement/notification_page.dart';
@@ -22,10 +25,11 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 70, 70, 70),
         actions: [
           GestureDetector(
-            onTap: () {
+            onTap: ()async {
+              List<Map<String,dynamic>> notifi=await getNotificationapi();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
+                MaterialPageRoute(builder: (context) => NotificationPage(notifi:notifi)),
               );
             },
             child: Padding(
@@ -180,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         gradient: LinearGradient(
-                          colors: [Colors.brown.shade500, Colors.brown.shade800],
+                          colors: [Colors.teal.shade400, Colors.teal.shade800],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -250,6 +254,105 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+
+            SizedBox(height: 20,),
+            Row(
+               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+               GestureDetector(
+                  onTap: () async{
+                   await previouscomplaints();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NoticeScreen()),
+                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(content: Text('Feedback button clicked!')),
+                    // );
+                  },
+                  child: Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Container(
+                      width: 150,
+                      height: 180,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: LinearGradient(
+                          colors: [Colors.teal.shade400, Colors.teal.shade800],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.notification_add_rounded, size: 50, color: Colors.white),
+                          SizedBox(height: 10),
+                          Text(
+                            'Add notice',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+
+
+
+ GestureDetector(
+                  onTap: () async{
+                   await previouscomplaints();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen(),
+                      ),(route) => false,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('logout')),
+                    );
+                  },
+                  child: Card(
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Container(
+                      width: 150,
+                      height: 180,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: LinearGradient(
+                          colors: [Colors.brown.shade500, Colors.brown.shade800],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.logout, size: 50, color: Colors.white),
+                          SizedBox(height: 10),
+                          Text(
+                            'Log Out',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+
+            ],)
           ],
         ),
       ),

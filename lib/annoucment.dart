@@ -53,7 +53,6 @@
 //     }
 //   }
 
-
 // void _startListening() async {
 //   var status = await Permission.microphone.request();
 //   if (status.isGranted) {
@@ -79,7 +78,6 @@
 //   }
 // }
 
-
 //   void _stopListening() {
 //     setState(() => _isListening = false);
 //     _speech.stop();
@@ -95,7 +93,6 @@
 //   super.initState();
 //   _speech = stt.SpeechToText();
 // }
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -159,7 +156,7 @@
 //                   height: 100,
 //                   width: 60,
 //                   child: Stack(
-                    
+
 //                     children: [
 //                       ElevatedButton(
 //                         onPressed: _isListening ? _stopListening : _startListening,
@@ -179,12 +176,11 @@
 //                         child: GestureDetector(
 //                           onTap: () async{
 
-
 //                             FilePickerResult? result = await FilePicker.platform.pickFiles();
 //                             if (result != null) {
 //    pickedfile = File(result.files.single.path!);
 //    setState(() {
-     
+
 //    });
 // } else {
 //   // User canceled the picker
@@ -192,7 +188,7 @@
 
 //                             // File addition logic
 //                           },
-                          
+
 //                           child: Container(
 //                             height: 40,width: 55,
 //                             decoration: BoxDecoration(color: Colors.green, ),
@@ -278,9 +274,7 @@
 //     DropDownValueModel(name: "BA History", value: "BA History"),
 //   ];
 
-
 // // final audioPlayer =AudioPlayer();
-
 
 //   stt.SpeechToText _speech = stt.SpeechToText();
 //   bool _isListening = false;
@@ -556,7 +550,7 @@
 //               ],
 //             ),
 //             // SizedBox(height: 16),
-            
+
 //             Spacer(),
 //             Center(
 //               child: ElevatedButton(
@@ -577,16 +571,19 @@
 //   }
 // }
 
-
 import 'dart:io';
+import 'package:announcement/api/announcmentapi.dart';
 import 'package:announcement/previous.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart'; // Import audioplayers package
+import 'package:flutter_sound/flutter_sound.dart';
 
 class AnnouncementPage extends StatefulWidget {
   @override
@@ -598,7 +595,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   final TextEditingController messageController = TextEditingController();
 
   TimeOfDay selectedTime = TimeOfDay.now();
-  MultiValueDropDownController _multiDropDownController = MultiValueDropDownController();
+  MultiValueDropDownController _multiDropDownController =
+      MultiValueDropDownController();
 
   final List<DropDownValueModel> departmentOptions = [
     DropDownValueModel(name: "All", value: "All"),
@@ -614,6 +612,11 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   AudioPlayer _audioPlayer = AudioPlayer(); // Initialize AudioPlayer
 
   String selectedLanguage = "en"; // Default language set to English
+  FlutterSoundRecorder? _recorder;
+  FlutterSoundPlayer? _player;
+  bool _isRecording = false;
+  bool _isPlaying = false;
+  String? _filePath;
 
   // Function to start the microphone and record the voice message
   void _startRecording() async {
@@ -662,24 +665,27 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 
   // Function to convert text to speech
-  void _speakMessage() async {
-    String message = messageController.text;
-    if (message.isNotEmpty) {
-      // Set the TTS language based on selected language
-      if (selectedLanguage == "en") {
-        await _flutterTts.setLanguage("en_US"); // English
-      } else if (selectedLanguage == "ml") {
-        await _flutterTts.setLanguage("ml_IN"); // Malayalam
-      }
-      await _flutterTts.speak(message);
-    } else {
-      print("Message is empty, cannot convert to speech");
-    }
-  }
+  // void _speakMessage() async {
+  //   String message = messageController.text;
+  //   if (message.isNotEmpty) {
+  //     // Set the TTS language based on selected language
+  //     if (selectedLanguage == "en") {
+  //       await _flutterTts.setLanguage("en_US"); // English
+  //     } else if (selectedLanguage == "ml") {
+  //       await _flutterTts.setLanguage("ml_IN"); // Malayalam
+  //     }
+  //     await _flutterTts.speak(message);
+  //   } else {
+  //     print("Message is empty, cannot convert to speech");
+  //   }
+  // }
 
   // Function to pick a file (optional feature)
   void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+  allowedExtensions: [ 'pdf', 'doc'],
+    );
     if (result != null) {
       pickedfile = File(result.files.single.path!);
       setState(() {});
@@ -702,23 +708,25 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 
   // Function to handle file play
-void _playRecordedFile() async {
-  if (pickedfile != null) {
-    // Create an AudioSource from the local file path
-    final audioSource = DeviceFileSource(pickedfile!.path);
+// void _playRecordedFile() async {
+//   if (pickedfile != null) {
+//     // Create an AudioSource from the local file path
+//     final audioSource = DeviceFileSource(pickedfile!.path);
 
-    // Play the audio
-    await _audioPlayer.play(audioSource);
-    print("Audio is playing...");
-  } else {
-    print("No file to play");
-  }
-}
+//     // Play the audio
+//     await _audioPlayer.play(audioSource);
+//     print("Audio is playing...");
+//   } else {
+//     print("No file to play");
+//   }
+// }
 
   @override
   void dispose() {
     _multiDropDownController.dispose();
     _audioPlayer.dispose(); // Dispose the player when done
+    _recorder?.closeRecorder(); // Null check added
+    _player?.closePlayer(); // Null check added
     super.dispose();
   }
 
@@ -726,24 +734,37 @@ void _playRecordedFile() async {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    openRecorder();
+    openPlayer();
   }
 
   // Function to handle the submit button click
   void _handleSubmit() async {
     String message = messageController.text;
-
+    List<String>dep=[];
+    
+ _multiDropDownController.dropDownValueList?.forEach((value) {
+  print(value.name);
+  dep.add(value.name);
+  print(dep.toString());
+});
     if (message.isNotEmpty) {
       // If the message is a text message, convert to speech and play it
-      await _flutterTts.speak(message);
+      // await _flutterTts.speak(message);
+     
+      await submitAnnouncement(
+          context,
+          titleController.text,
+          messageController.text,
+          pickedfile??File(''),
+         _filePath??'',
+          dep.join(", "),
+          '${selectedTime.hour}-${selectedTime.minute}}');
 
       // Simulate sending the message (You can replace this with your logic to send it to a server)
       print("Sending message: $message");
-    } else if (pickedfile != null) {
-      // If a file (audio) was picked, play it
-      _playRecordedFile();
-
-      // Add your file sending logic here
-      // Example: Upload the file to a server
     } else {
       print("No message or file to send.");
     }
@@ -766,6 +787,109 @@ void _playRecordedFile() async {
     });
   }
 
+  //
+
+  // Open recorder
+  Future<void> openRecorder() async {
+    await _recorder?.openRecorder(); // Use null-aware operator
+  }
+
+  // Open player
+  Future<void> openPlayer() async {
+    await _player?.openPlayer(); // Use null-aware operator
+  }
+
+  // Toggle recording (start/stop)
+  Future<void> toggleRecording() async {
+    if (_isRecording) {
+      await stopRecording();
+    } else {
+      await startRecording();
+    }
+  }
+
+
+
+
+Future<String> getAudioFilePath() async {
+  // Get the app's document directory to store the file
+  final directory = await getApplicationDocumentsDirectory();
+  String filePath = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+  return filePath;
+}
+  // Start recording
+ Future<void> startRecording() async {
+  String filePath = await getAudioFilePath();  // Get a valid file path
+
+  try {
+    await _recorder?.startRecorder(
+      toFile: filePath,  // Save to the correct file path
+      codec: Codec.pcm16WAV,
+    );
+    setState(() {
+      _isRecording = true;
+      _filePath = filePath; // Save the file path
+    });
+  } catch (e) {
+    print("Error while starting the recording: $e");
+  }
+}
+
+  // Stop recording
+  Future<void> stopRecording() async {
+    if (_isRecording) {
+      await _recorder?.stopRecorder();
+      setState(() {
+        _isRecording = false;
+      });
+      print("Recording stopped and saved to $_filePath");
+    }
+  }
+
+  // Play or pause the recorded audio
+  Future<void> togglePlaying() async {
+    if (_isPlaying) {
+      await stopPlaying();
+    } else {
+      await startPlaying();
+    }
+  }
+
+  // Start playing the recorded audio
+  Future<void> startPlaying() async {
+    if (_filePath != null) {
+      try {
+        await _player?.startPlayer(
+          fromURI: _filePath,
+          codec: Codec.aacADTS,
+          whenFinished: () {
+            setState(() {
+              _isPlaying = false;
+            });
+          },
+        );
+        setState(() {
+          _isPlaying = true;
+        });
+      } catch (e) {
+        print("Error while playing the audio: $e");
+      }
+    }
+  }
+
+  // Stop playing the recorded audio
+  Future<void> stopPlaying() async {
+    if (_isPlaying) {
+      await _player?.stopPlayer();
+      setState(() {
+        _isPlaying = false;
+      });
+      print("Audio stopped playing");
+    }
+  }
+
+  //
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -781,137 +905,165 @@ void _playRecordedFile() async {
           ElevatedButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Previouspage()),
+              MaterialPageRoute(builder: (context) => PreviousPage()),
             ),
             child: Text(
               "Previous",
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text("Title:"),
-                SizedBox(
-                  height: 40,
-                  width: 300,
-                  child: TextField(
-                    controller: titleController,
-                    decoration: InputDecoration(border: OutlineInputBorder()),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Text("Message:"),
-            DropdownButton<String>(
-              value: selectedLanguage,
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedLanguage = newValue!;
-                });
-              },
-              items: <String>['en', 'ml']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value == 'en' ? 'English' : 'Malayalam'),
-                );
-              }).toList(),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 100,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text("Title:"),
+                  Expanded(
                     child: TextField(
-                      controller: messageController,
-                      maxLines: null,
-                      expands: true,
-                      decoration: InputDecoration(border: OutlineInputBorder()),
+                        controller: titleController,
+                        decoration: InputDecoration(border: OutlineInputBorder()),
+                     
                     ),
                   ),
-                ),
-                SizedBox(width: 10),
-                SizedBox(
-                  height: 100,
-                  width: 60,
-                  child: Stack(
-                    children: [
-                      ElevatedButton(
-                        onPressed: _isListening ? _stopRecording : _startRecording,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _isListening
-                              ? Colors.red // Change to red when recording
-                              : Color.fromARGB(255, 180, 213, 240),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Icon(_isListening ? Icons.stop : Icons.mic),
+                ],
+              ),
+              SizedBox(height: 16),
+              Text("Message:"),
+              // DropdownButton<String>(
+              //   value: selectedLanguage,
+              //   onChanged: (String? newValue) {
+              //     setState(() {
+              //       selectedLanguage = newValue!;
+              //     });
+              //   },
+              //   items: <String>['en', 'ml']
+              //       .map<DropdownMenuItem<String>>((String value) {
+              //     return DropdownMenuItem<String>(
+              //       value: value,
+              //       child: Text(value == 'en' ? 'English' : 'Malayalam'),
+              //     );
+              //   }).toList(),
+              // ),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 100,
+                      child: TextField(
+                        controller: messageController,
+                        maxLines: null,
+                        expands: true,
+                        decoration: InputDecoration(border: OutlineInputBorder()),
                       ),
-                      Positioned(
-                        bottom: 5,
-                        right: 5,
-                        child: GestureDetector(
-                          onTap: _pickFile,
-                          child: Container(
-                            height: 40,
-                            width: 55,
-                            decoration: BoxDecoration(color: Colors.green),
-                            padding: EdgeInsets.all(4),
-                            child: Icon(Icons.add, size: 16, color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  SizedBox(
+                    height: 100,
+                    width: 60,
+                    child: Stack(
+                      children: [
+                        ElevatedButton(
+                          onPressed:
+                              _isListening ? _stopRecording : _startRecording,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isListening
+                                ? Colors.red // Change to red when recording
+                                : Color.fromARGB(255, 180, 213, 240),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Icon(_isListening ? Icons.stop : Icons.mic),
+                        ),
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
+                          child: GestureDetector(
+                            onTap: _pickFile,
+                            child: Container(
+                              height: 40,
+                              width: 55,
+                              decoration: BoxDecoration(color: Colors.green),
+                              padding: EdgeInsets.all(4),
+                              child:
+                                  Icon(Icons.add, size: 16, color: Colors.white),
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              if (pickedfile != null) Text('Selected file: ${pickedfile!.path.split('/').last}'),
+              DropDownTextField.multiSelection(
+                controller: _multiDropDownController,
+                dropDownList: departmentOptions,
+                textFieldDecoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Select Departments",
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Text("Time: ${selectedTime.format(context)}"),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _pickTime,
+                    child: Text("Pick Time"),
+                  ),
+                ],
+              ),
+        
+              SizedBox(height: 16),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: toggleRecording,
+                      child:
+                          Icon(_isRecording ? Icons.mic : Icons.mic_off_outlined),
+                    ),
+                    SizedBox(height: 20),
+                    // Only show the Play button if audio exists (i.e., _filePath is not null)
+                    if (_filePath != null)
+                      ElevatedButton(
+                        onPressed: togglePlaying,
+                        child: Icon(!_isPlaying ? Icons.play_arrow : Icons.pause),
                       ),
-                    ],
+                  ],
+                ),
+              ),
+              // Spacer(),
+              SizedBox(height: 100,),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _handleSubmit, // Submit button logic
+                  child: Text("Submit"),
+                  style: ElevatedButton.styleFrom(
+                    
+                  foregroundColor: const Color.fromARGB(255, 250, 248, 248),
+                   backgroundColor: const Color.fromARGB(255, 70, 70, 70),
+                   
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: TextStyle(fontSize: 20),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 16),
-            if (pickedfile != null) Text('File name: ${pickedfile!.path}'),
-            DropDownTextField.multiSelection(
-              controller: _multiDropDownController,
-              dropDownList: departmentOptions,
-              textFieldDecoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Select Departments",
               ),
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Text("Time: ${selectedTime.format(context)}"),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _pickTime,
-                  child: Text("Pick Time"),
-                ),
-              ],
-            ),
-            Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: _handleSubmit, // Submit button logic
-                child: Text("Submit"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 27, 108, 3),
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  textStyle: TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

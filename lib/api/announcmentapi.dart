@@ -1,24 +1,42 @@
+import 'dart:io'; // To use File class
 import 'package:announcement/api/loginapi.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-Future<void> _submitAnnouncement(context) async {
 
 
-  Map<String, dynamic> announcementData = {
-    // 'title': "",
-    // 'message': "",
-    // 'departments': _multiDropDownController.dropDownValueList!
-    //     .map((e) => e.name)
-    //     .toList(),
-    // 'time': '${selectedTime.hour}:${selectedTime.minute}',
-  };
+
+
+
+Future<void> submitAnnouncement(
+  BuildContext context,
+  String title,
+  String description,
+  File doc,
+  String audio,
+  String department,
+  String time,
+) async {
+  // Prepare FormData to send
+//  String convertedAudioPath = await convertAacToMp3(audio);
+
+FormData formData = FormData.fromMap({
+  'userid': lid,
+  'title': title,
+  'description': description,
+  'department': department,
+  'time': time,
+  'doc': await MultipartFile.fromFile(doc.path, filename: doc.uri.pathSegments.last),
+  'audio': await MultipartFile.fromFile(audio, filename: '${audio.split('/').last}'),
+});
 
   try {
     Response response = await dio.post(
-      "$baseUrl/hkhckhc",
-      options: Options(headers: {'Content-Type': 'application/json'}),
-      data: announcementData,
+      "$baseUrl/upload", // Change this to your actual API endpoint
+      options: Options(
+        headers: {'Content-Type': 'multipart/form-data'}, // This tells Dio to send multipart data
+      ),
+      data: formData,
     );
 
     if (response.statusCode == 201) {
@@ -32,6 +50,7 @@ Future<void> _submitAnnouncement(context) async {
     }
   } on DioException catch (e) {
     if (e.response != null) {
+      print(e.response!.data);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Server error: ${e.response?.data}")),
       );
@@ -41,6 +60,7 @@ Future<void> _submitAnnouncement(context) async {
       );
     }
   } catch (e) {
+    print(e);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("An unexpected error occurred.")),
     );
