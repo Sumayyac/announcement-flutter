@@ -600,8 +600,17 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
   final List<DropDownValueModel> departmentOptions = [
     DropDownValueModel(name: "All", value: "All"),
-    DropDownValueModel(name: "BSC CS", value: "BSC CS"),
     DropDownValueModel(name: "BA History", value: "BA History"),
+    DropDownValueModel(name: "BA English", value: "BA English"),
+    DropDownValueModel(
+        name: "BSc Computer Science", value: "BSc Computer Science"),
+    DropDownValueModel(name: "BSc Chemistry", value: "BSc Chemistry"),
+    DropDownValueModel(name: "BSc Mathematics", value: "BSc Mathematics"),
+    DropDownValueModel(name: "BSc Botany", value: "BSc Botany"),
+    DropDownValueModel(name: "BSc Home Science", value: "BSc Home Science"),
+    DropDownValueModel(
+        name: "Bcom Computer Application", value: "Bcom Computer Application"),
+    DropDownValueModel(name: "Bcom Co-operation", value: "BSC Co-operation"),
   ];
 
   stt.SpeechToText _speech = stt.SpeechToText();
@@ -617,6 +626,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   bool _isRecording = false;
   bool _isPlaying = false;
   String? _filePath;
+  DateTime? selecteddate;
 
   // Function to start the microphone and record the voice message
   void _startRecording() async {
@@ -684,7 +694,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   void _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-  allowedExtensions: [ 'pdf', 'doc'],
+      allowedExtensions: ['pdf', 'doc', 'png', 'jpg'],
     );
     if (result != null) {
       pickedfile = File(result.files.single.path!);
@@ -743,25 +753,25 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   // Function to handle the submit button click
   void _handleSubmit() async {
     String message = messageController.text;
-    List<String>dep=[];
-    
- _multiDropDownController.dropDownValueList?.forEach((value) {
-  print(value.name);
-  dep.add(value.name);
-  print(dep.toString());
-});
+    List<String> dep = [];
+    print('rrrrrrrrrrrrrr');
+    _multiDropDownController.dropDownValueList?.forEach((value) {
+      print(value.name);
+      dep.add(value.name);
+      print(dep.toString());
+    });
     if (message.isNotEmpty) {
       // If the message is a text message, convert to speech and play it
       // await _flutterTts.speak(message);
-     
+      print('eeeeeeeeeeeeeeeeeeeeeeeeeee');
       await submitAnnouncement(
           context,
-          titleController.text,
+          selecteddate!.toIso8601String(),
           messageController.text,
-          pickedfile??File(''),
-         _filePath??'',
+          pickedfile ?? null,
+          _filePath ?? null,
           dep.join(", "),
-          '${selectedTime.hour}-${selectedTime.minute}}');
+          '${selectedTime.hour}:${selectedTime.minute}:00');
 
       // Simulate sending the message (You can replace this with your logic to send it to a server)
       print("Sending message: $message");
@@ -808,32 +818,31 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
     }
   }
 
-
-
-
-Future<String> getAudioFilePath() async {
-  // Get the app's document directory to store the file
-  final directory = await getApplicationDocumentsDirectory();
-  String filePath = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
-  return filePath;
-}
-  // Start recording
- Future<void> startRecording() async {
-  String filePath = await getAudioFilePath();  // Get a valid file path
-
-  try {
-    await _recorder?.startRecorder(
-      toFile: filePath,  // Save to the correct file path
-      codec: Codec.pcm16WAV,
-    );
-    setState(() {
-      _isRecording = true;
-      _filePath = filePath; // Save the file path
-    });
-  } catch (e) {
-    print("Error while starting the recording: $e");
+  Future<String> getAudioFilePath() async {
+    // Get the app's document directory to store the file
+    final directory = await getApplicationDocumentsDirectory();
+    String filePath =
+        '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+    return filePath;
   }
-}
+
+  // Start recording
+  Future<void> startRecording() async {
+    String filePath = await getAudioFilePath(); // Get a valid file path
+
+    try {
+      await _recorder?.startRecorder(
+        toFile: filePath, // Save to the correct file path
+        codec: Codec.pcm16WAV,
+      );
+      setState(() {
+        _isRecording = true;
+        _filePath = filePath; // Save the file path
+      });
+    } catch (e) {
+      print("Error while starting the recording: $e");
+    }
+  }
 
   // Stop recording
   Future<void> stopRecording() async {
@@ -923,14 +932,15 @@ Future<String> getAudioFilePath() async {
             children: [
               Row(
                 children: [
-                  Text("Title:"),
-                  Expanded(
-                    child: TextField(
-                        controller: titleController,
-                        decoration: InputDecoration(border: OutlineInputBorder()),
-                     
-                    ),
-                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        selecteddate = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now(),
+                            initialDate: DateTime.now() ,
+                            lastDate: DateTime.now().add(Duration(days: 100)));
+                      },
+                      child: Text('Pick Date'))
                 ],
               ),
               SizedBox(height: 16),
@@ -959,7 +969,8 @@ Future<String> getAudioFilePath() async {
                         controller: messageController,
                         maxLines: null,
                         expands: true,
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                        decoration:
+                            InputDecoration(border: OutlineInputBorder()),
                       ),
                     ),
                   ),
@@ -992,8 +1003,8 @@ Future<String> getAudioFilePath() async {
                               width: 55,
                               decoration: BoxDecoration(color: Colors.green),
                               padding: EdgeInsets.all(4),
-                              child:
-                                  Icon(Icons.add, size: 16, color: Colors.white),
+                              child: Icon(Icons.add,
+                                  size: 16, color: Colors.white),
                             ),
                           ),
                         ),
@@ -1003,7 +1014,8 @@ Future<String> getAudioFilePath() async {
                 ],
               ),
               SizedBox(height: 16),
-              if (pickedfile != null) Text('Selected file: ${pickedfile!.path.split('/').last}'),
+              if (pickedfile != null)
+                Text('Selected file: ${pickedfile!.path.split('/').last}'),
               DropDownTextField.multiSelection(
                 controller: _multiDropDownController,
                 dropDownList: departmentOptions,
@@ -1023,7 +1035,7 @@ Future<String> getAudioFilePath() async {
                   ),
                 ],
               ),
-        
+
               SizedBox(height: 16),
               Center(
                 child: Row(
@@ -1031,30 +1043,31 @@ Future<String> getAudioFilePath() async {
                   children: [
                     ElevatedButton(
                       onPressed: toggleRecording,
-                      child:
-                          Icon(_isRecording ? Icons.mic : Icons.mic_off_outlined),
+                      child: Icon(
+                          _isRecording ? Icons.mic : Icons.mic_off_outlined),
                     ),
                     SizedBox(height: 20),
                     // Only show the Play button if audio exists (i.e., _filePath is not null)
                     if (_filePath != null)
                       ElevatedButton(
                         onPressed: togglePlaying,
-                        child: Icon(!_isPlaying ? Icons.play_arrow : Icons.pause),
+                        child:
+                            Icon(!_isPlaying ? Icons.play_arrow : Icons.pause),
                       ),
                   ],
                 ),
               ),
               // Spacer(),
-              SizedBox(height: 100,),
+              SizedBox(
+                height: 100,
+              ),
               Center(
                 child: ElevatedButton(
                   onPressed: _handleSubmit, // Submit button logic
                   child: Text("Submit"),
                   style: ElevatedButton.styleFrom(
-                    
-                  foregroundColor: const Color.fromARGB(255, 250, 248, 248),
-                   backgroundColor: const Color.fromARGB(255, 70, 70, 70),
-                   
+                    foregroundColor: const Color.fromARGB(255, 250, 248, 248),
+                    backgroundColor: const Color.fromARGB(255, 70, 70, 70),
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     textStyle: TextStyle(fontSize: 20),
                   ),

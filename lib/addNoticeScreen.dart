@@ -26,55 +26,65 @@ class _NoticeScreenState extends State<NoticeScreen> {
   }
 
   // Function to send notice to the server
-  Future<void> _sendNotice() async {
-    String title = _titleController.text;
+Future<void> _sendNotice() async {
+  String title = _titleController.text;
 
-    if (title.isEmpty || _pickedImage == null) {
-      // Display an error if title or image is missing
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a title and choose an image')),
-      );
-      return;
-    }
+  if (title.isEmpty || _pickedImage == null) {
+    // Display an error if title or image is missing
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please enter a title and choose an image')),
+    );
+    return;
+  }
 
-    try {
-      // Prepare data to be sent in the form of FormData
-      FormData formData = FormData.fromMap({
-        'title': title,
-        'image': await MultipartFile.fromFile(_pickedImage!.path, filename: 'notice_image.jpg'),
+  try {
+    // Prepare data to be sent in the form of FormData
+    FormData formData = FormData.fromMap({
+      'title': title,
+      'image': await MultipartFile.fromFile(_pickedImage!.path, filename: 'notice_image.jpg'),
+      'lid': lid, // You might want to ensure `lid` is defined elsewhere
+    });
+
+    // Print the form data (you need to loop over the formData to print the values)
+    print('/////////////');
+    formData.fields.forEach((field) {
+      print('${field.key}: ${field.value}');
+    });
+    print('/////////////');
+
+    // Send POST request using Dio
+    Dio dio = Dio();
+    Response response = await dio.post(
+      'http://192.168.43.171:5001/submit_notice', // Replace with your actual API endpoint
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      // If the request is successful, clear the fields and show success message
+      setState(() {
+        _titleController.clear();
+        _pickedImage = null;
       });
 
-      // Send POST request using Dio
-      Dio dio = Dio();
-      Response response = await dio.post(
-        '$baseUrl/submit_notice', // Replace with your actual API endpoint
-        data: formData,
-      );
-
-      if (response.statusCode == 200) {
-        // If the request is successful, clear the fields and show success message
-        setState(() {
-          _titleController.clear();
-          _pickedImage = null;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Notice sent successfully')),
-        );
-      } else {
-        // Handle non-200 responses
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send notice. Please try again.')),
-        );
-      }
-    } catch (e) {
-      // Handle errors such as network issues
-      print('Error sending notice: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending notice. Please try again.')),
+        SnackBar(content: Text('Notice sent successfully')),
+      );
+    } else {
+      // Handle non-200 responses
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send notice. Please try again.')),
       );
     }
+  } catch (e) {
+    // Handle errors such as network issues
+    print('Error sending notice: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error sending notice. Please try again.')),
+    );
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

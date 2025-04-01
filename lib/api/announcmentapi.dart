@@ -10,25 +10,28 @@ import 'package:flutter/material.dart';
 
 Future<void> submitAnnouncement(
   BuildContext context,
-  String title,
+  String date,
   String description,
-  File doc,
-  String audio,
+   doc,
+   audio,
   String department,
-  String time,
+   time,
 ) async {
   // Prepare FormData to send
 //  String convertedAudioPath = await convertAacToMp3(audio);
-
+print('khgj');
 FormData formData = FormData.fromMap({
   'userid': lid,
-  'title': title,
+  'date': date,
   'description': description,
   'department': department,
   'time': time,
-  'doc': await MultipartFile.fromFile(doc.path, filename: doc.uri.pathSegments.last),
-  'audio': await MultipartFile.fromFile(audio, filename: '${audio.split('/').last}'),
+  'doc':doc!=null? await MultipartFile.fromFile(doc.path, filename: doc.uri.pathSegments.last):'',
+  'audio':audio!=null? await MultipartFile.fromFile(audio, filename: '${audio.split('/').last}'):null,
 });
+
+
+
 
   try {
     Response response = await dio.post(
@@ -66,3 +69,5 @@ FormData formData = FormData.fromMap({
     );
   }
 }
+
+

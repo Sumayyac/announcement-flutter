@@ -1,5 +1,6 @@
 import 'package:announcement/addNoticeScreen.dart';
 import 'package:announcement/api/getNotification.dart';
+import 'package:announcement/api/loginapi.dart';
 import 'package:announcement/api/previouscomplaintsapi.dart';
 import 'package:announcement/api/userprofileviewapi.dart';
 import 'package:announcement/loginScreen.dart';
@@ -9,11 +10,40 @@ import 'package:announcement/notification_page.dart';
 import 'package:announcement/profile_edit.dart';
 import 'annoucment.dart';
 
-class HomeScreen extends StatelessWidget {
-  final String name = "John Doe";
-  final String department = "Software Engineering";
+class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+    String name = "";
+  String department = "";
+  String profileImageUrl = ""; // Add a variable for the profile image URL
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  // Fetch user profile data
+  Future<void> _fetchUserProfile() async {
+    try {
+      Map<String, dynamic> profileData = await userprofileview();
+      setState(() {
+        name = profileData['name'] ?? "John Doe"; // Use default value if null
+        department = profileData['department'] ?? "Software Engineering"; // Default department
+        profileImageUrl = profileData['profile'] ?? ''; // Default to empty if no image URL
+      });
+    } catch (e) {
+      // Handle errors or failed API calls gracefully
+      print("Error fetching user profile: $e");
+      print("Profile Image URL: $profileImageUrl");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +92,18 @@ class HomeScreen extends StatelessWidget {
                         // );
                       },
                       child: CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+  radius: 30,
+  backgroundColor: Colors.white,
+  backgroundImage: profileImageUrl.isNotEmpty
+      ? NetworkImage('$baseUrl/static/images/$profileImageUrl')
+      : AssetImage('assets/static/images/default_profile.png'),
+),
+
+                  ),
+                    
                     SizedBox(height: 16),
                     Text(
-                      name,
+                       name.isNotEmpty ? name : "", 
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -82,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      department,
+                      department.isNotEmpty ? department : "",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
